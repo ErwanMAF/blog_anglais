@@ -285,17 +285,17 @@
 	};
 
 	$(document).ready(function() {
-		// Initialisation de Magnific Popup pour le texte
-		$('.open-popup-link').magnificPopup({
-			type: 'inline',  // Type "inline" pour une popup de texte
-			midClick: true    // Permet d'ouvrir la popup même avec un clic sur un élément non-lien
-		});
-	
-		// Initialisation de Magnific Popup pour les images (GIF)
-		$('.image-popup').magnificPopup({
-			type: 'image',    // Type d'image pour la popup du GIF
-			closeOnContentClick: true  // Ferme la popup lorsque le contenu est cliqué
-		});
+    // Initialisation de Magnific Popup pour le texte
+    $('.open-popup-link').magnificPopup({
+        type: 'inline',  // Type "inline" pour une popup de texte
+        midClick: true    // Permet d'ouvrir la popup même avec un clic sur un élément non-lien
+    });
+
+    // Initialisation de Magnific Popup pour les images (GIF)
+    $('.image-popup').magnificPopup({
+        type: 'image',    // Type d'image pour la popup du GIF
+        closeOnContentClick: true  // Ferme la popup lorsque le contenu est cliqué
+    });
 	});
 	
 	
