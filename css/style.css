@@ -1905,4 +1905,23 @@ form label {
     object-fit: cover; /* Coupe l’image pour remplir le cercle sans déformation */
 }
 
+.white-popup {
+  background: #fff;
+  padding: 30px;
+  width: 80%;
+  max-width: 400px;
+  margin: 40px auto;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.mfp-hide {
+  display: none;
+}
+
+.open-popup-link {
+  display: inline-block;
+  text-decoration: none;
+}
 /*# sourceMappingURL=style.css.map */
