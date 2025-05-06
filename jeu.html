@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Stack - Jeu Complet</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        #gameCanvas {
+            background: #333;
+        }
+        #score {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="score">Score: 0</div>
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score');
+
+        let blocks = [];
+        let currentBlock = null;
+        let blockWidth = 200;
+        let blockHeight = 40;
+        let blockSpeed = 4;
+        let direction = 1;
+        let cameraY = 0;
+        let score = 0;
+        let gameOver = false;
+
+        const colors = ['#00b4d8', '#90be6d', '#f94144', '#f8961e', '#577590'];
+
+        // Classe pour un bloc
+        class Block {
+            constructor(x, width, y, color) {
+                this.x = x;
+                this.width = width;
+                this.y = y;
+                this.color = color;
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y - cameraY, this.width, blockHeight);
+            }
+        }
+
+        // Générer un nouveau bloc
+        function spawnBlock() {
+            const x = (canvas.width - blockWidth) / 2;
+            const y = blocks.length === 0 ? canvas.height - blockHeight : blocks[blocks.length - 1].y - blockHeight;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            currentBlock = new Block(x, blockWidth, y, color);
+        }
+
+        // Animer le bloc actuel
+        function animateBlock() {
+            if (!currentBlock || gameOver) return;
+            currentBlock.x += blockSpeed * direction;
+            if (currentBlock.x + currentBlock.width > canvas.width || currentBlock.x < 0) {
+                direction *= -1;
+            }
+        }
+
+        // Poser le bloc
+        function dropBlock() {
+            if (!currentBlock || gameOver) return;
+
+            const lastBlock = blocks[blocks.length - 1] || { x: (canvas.width - blockWidth) / 2, width: blockWidth, y: canvas.height };
+            const diff = currentBlock.x - lastBlock.x;
+            const overlap = Math.min(currentBlock.width, lastBlock.width) - Math.abs(diff);
+
+            if (overlap <= 0) {
+                gameOver = true;
+                alert(`Game Over ! Score: ${score}`);
+                resetGame();
+                return;
+            }
+
+            // Ajuster la taille et la position du bloc
+            currentBlock.width = overlap;
+            currentBlock.x = diff > 0 ? lastBlock.x : currentBlock.x;
+            blocks.push(currentBlock);
+            score++;
+            scoreDisplay.textContent = `Score: ${score}`;
+
+            // Ajuster la caméra
+            if (blocks.length > 5) {
+                cameraY = (blocks.length - 5) * blockHeight;
+            }
+
+            blockWidth = currentBlock.width;
+            spawnBlock();
+        }
+
+        // Réinitialiser le jeu
+        function resetGame() {
+            blocks = [];
+            blockWidth = 200;
+            cameraY = 0;
+            score = 0;
+            scoreDisplay.textContent = `Score: ${score}`;
+            gameOver = false;
+            spawnBlock();
+        }
+
+        // Dessiner tout
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            blocks.forEach(block => block.draw());
+            if (currentBlock) currentBlock.draw();
+        }
+
+        // Boucle de jeu
+        function gameLoop() {
+            animateBlock();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Événement clic
+        canvas.addEventListener('click', dropBlock);
+
+        // Démarrer le jeu
+        spawnBlock();
+        gameLoop();
+    </script>
+</body>
+</html>
