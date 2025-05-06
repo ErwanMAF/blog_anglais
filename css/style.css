@@ -1494,6 +1494,14 @@ form label {
   background: url(../images/loader.gif) center no-repeat #fff;
 }
 
+.panda img {
+  width: 10px; /* Taille explicite */
+  height: auto;
+  position: absolute; /* Positionnement libre */
+  top: 523px; /* Ajustez pour déplacer verticalement */
+  left: 746px; /* Ajustez pour déplacer horizontalement */
+}
+
 .image-container {
   text-align: center;
   margin: 20px 0;
