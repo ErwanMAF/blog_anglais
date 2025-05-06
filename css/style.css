@@ -1494,6 +1494,28 @@ form label {
   background: url(../images/loader.gif) center no-repeat #fff;
 }
 
+.image-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.image-container img {
+  width: 500px; /* Taille explicite */
+  height: auto;
+  border: 5px solid #FFFFFFF;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(51, 204, 255, 0.5);
+}
+
+.content img {
+  width: 300px; /* Taille explicite */
+  height: auto;
+  border: 3px solid;
+  border-radius: 10px;
+  margin-right: 20px; /* Espace entre l'image et le texte */
+  float: left; /* Positionne l'image à gauche */
+}
+
 .js .animate-box {
   opacity: 0;
 }
