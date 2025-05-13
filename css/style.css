@@ -1502,9 +1502,9 @@ form label {
   left: 726px; /* Ajustez pour déplacer horizontalement */
 }
 
-.Panda img {
-  width: 5px; /* Taille explicite */
-  height: auto;
+.Panda img {/* Taille explicite */
+  height auto;
+  width: 5px;
   position: absolute; /* Positionnement libre */
   top: 508px; /* Ajustez pour déplacer verticalement */
   left: -28px; /* Ajustez pour déplacer horizontalement */
