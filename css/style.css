@@ -1498,8 +1498,16 @@ form label {
   width: 10px; /* Taille explicite */
   height: auto;
   position: absolute; /* Positionnement libre */
-  top: 523px; /* Ajustez pour déplacer verticalement */
-  left: 746px; /* Ajustez pour déplacer horizontalement */
+  top: 465px; /* Ajustez pour déplacer verticalement */
+  left: 726px; /* Ajustez pour déplacer horizontalement */
+}
+
+.Panda img {
+  width: 5px; /* Taille explicite */
+  height: auto;
+  position: absolute; /* Positionnement libre */
+  top: 508px; /* Ajustez pour déplacer verticalement */
+  left: -28px; /* Ajustez pour déplacer horizontalement */
 }
 
 .image-container {
