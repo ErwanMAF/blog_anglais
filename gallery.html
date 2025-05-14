@@ -165,7 +165,16 @@
 	<script src="js/bootstrap-datepicker.min.js"></script>
 
 	<script src="js/lightbox.js"></script>
-	<script src="js/lightbox.min.js"></script>
+	<script>
+        lightbox.option({
+        'resizeDuration': 200,
+        'fadeDuration': 200,
+        'imageFadeDuration': 200,
+        'wrapAround': true,
+        'alwaysShowNavOnTouchDevices': true,
+        'disableScrolling': true
+        });
+    </script>
 
 	<!-- Main -->
 	<script src="js/main.js"></script>
