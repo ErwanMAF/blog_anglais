@@ -173,10 +173,17 @@
 	  document.getElementById('randomImageBtn').addEventListener('click', function () {
 		// Liste des noms de fichiers d'images (à adapter selon ton dossier)
 		const images = [
-		  'classe.jpg',
-		  'erwan-sandwich.jpg',
-		  'matheo-bizarre1.jpg',
-		  'image4.jpg'
+		  'bmw.jpg',
+			'matheo-bizarre1.jpg',
+			'pandabaise.jpg',
+			'pandacolere.jpg',
+			'pandaph.jpg',
+			'random1.jpg',
+			'random2.jpg',
+			'random3.jpg',
+			'random4.jpg',
+			'random5.jpg',
+			'valiseesteban.gif',
 		  // Ajoute ici toutes les images disponibles
 		];
 
@@ -186,7 +193,7 @@
 
 		// Créer dynamiquement un lien Lightbox et le déclencher
 		const link = document.createElement('a');
-		link.href = 'images/gallery/' + selectedImage;
+		link.href = 'images/gallery/random/' + selectedImage;
 		link.setAttribute('data-lightbox', 'random');
 		link.style.display = 'none'; // Ne pas l'afficher dans la page
 
