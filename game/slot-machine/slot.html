@@ -6,9 +6,9 @@
     <title>HTML5 Slot Machine - 5 Reels, 5 Rows</title>
     <style>
         :root {
-            --icon-width: 200px;  /* Changé de 79px à 200px */
-            --icon-height: 200px; /* Changé de 79px à 200px */
-            --num-icons: 5;
+            --icon-width: 79px;
+            --icon-height: 79px;
+            --num-icons: 5; /* Matches number of images in images.json */
         }
 
         .debug {
@@ -128,9 +128,8 @@
         }
 
         .symbol img {
-            width: 200px;  /* Taille fixe à 200px */
-            height: 200px; /* Taille fixe à 200px */
-            object-fit: cover; /* S'assure que l'image remplit l'espace sans déformation */
+            width: calc(var(--icon-width) * 0.9);
+            height: calc(var(--icon-height) * 0.9);
         }
 
         .reel::after {
@@ -224,8 +223,8 @@
 <script>
 const debugEl = document.getElementById('debug'),
       spinButton = document.querySelector('.spin-button'),
-      icon_width = 200,  // Changé de 79 à 200
-      icon_height = 200, // Changé de 79 à 200
+      icon_width = 79,
+      icon_height = 79,
       time_per_icon = 100,
       indexes = [0, 0, 0, 0, 0],
       symbolsPerReel = 7;
@@ -244,15 +243,15 @@ function shuffle(array) {
 
 async function loadImages() {
     try {
-        const response = await fetch('../../images.json'); // Ajusté pour remonter au dossier racine
+        const response = await fetch('images.json');
         if (!response.ok) throw new Error(`Network error: ${response.status}`);
         const data = await response.json();
         console.log('Fetched data:', data);
         if (!data.symbolList) throw new Error('symbolList not found in images.json');
         const allImages = shuffle([...data.symbolList]);
         const selectedImages = allImages.slice(0, 5);
-        symbolList = selectedImages.map(file => file); // Utilise directement les chemins de images.json
-        iconMap = selectedImages.map(file => file.split('/').pop().replace(/\.(png|jpg|jpeg|gif)/i, ''));
+        symbolList = selectedImages.map(file => `/blog_anglais${file}`);
+        iconMap = selectedImages.map(file => file.replace('.png', ''));
         if (symbolList.length === 0) {
             throw new Error('No images found in images.json');
         }
@@ -261,7 +260,6 @@ async function loadImages() {
     } catch (err) {
         console.error('Error loading images:', err);
         debugEl.textContent = `Error loading images: ${err.message}`;
-        document.getElementById('error').style.display = 'block';
         throw err;
     }
 }
@@ -293,7 +291,9 @@ function initializeReels() {
             symbolDiv.appendChild(img);
             symbolsContainer.appendChild(symbolDiv);
         }
+        // Log initial center symbol (fourth symbol)
         console.log(`Reel ${reelIndex + 1} initial center symbol: ${iconMap[state.symbols[3] % iconMap.length]} (index: ${state.symbols[3]})`);
+        // Verify with DOM
         const centerSymbolElement = symbolsContainer.querySelector('.symbol:nth-child(4) img');
         console.log(`Reel ${reelIndex + 1} visual initial center symbol: ${centerSymbolElement.alt} (index: ${iconMap.indexOf(centerSymbolElement.alt)})`);
     });
@@ -312,12 +312,13 @@ const roll = (reel, offset = 0, finalIndex = null) => {
                 symbolsContainer.classList.add('spinning');
                 setTimeout(() => {
                     symbolsContainer.classList.remove('spinning');
+                    // Recycle the bottom symbol to the top
                     const bottomSymbolIndex = state.symbols[4];
                     state.symbols = [
                         state.symbols[1], state.symbols[2], state.symbols[3], state.symbols[4],
                         state.symbols[5], state.symbols[6], bottomSymbolIndex
                     ];
-                    state.currentIndex = state.symbols[3];
+                    state.currentIndex = state.symbols[3]; // Update to center symbol (fourth)
 
                     symbols.forEach((img, i) => {
                         img.src = symbolList[state.symbols[i] % symbolList.length] || 'placeholder.png';
@@ -330,6 +331,7 @@ const roll = (reel, offset = 0, finalIndex = null) => {
                     setTimeout(animateSpin, 50);
                 }, 500);
             } else {
+                // Set final symbol based on DOM verification
                 const centerSymbolElement = symbolsContainer.querySelector('.symbol:nth-child(4) img');
                 const visualCenterSymbol = centerSymbolElement.alt;
                 const visualCenterIndex = iconMap.indexOf(visualCenterSymbol);
@@ -391,17 +393,19 @@ function rollAll() {
 
 async function init() {
     try {
-        await loadImages();
-        initializeReels();
+        await loadImages();                  // Charger les images nécessaires
+        initializeReels();                  // Initialiser les rouleaux
         spinButton.addEventListener('click', () => {
             localStorage.setItem('spinAfterReload', 'true');
             location.reload();
-        });
+        }); // Écouteur de clic
 
+        // Vérifie si un spin automatique est requis après reload
         if (localStorage.getItem('spinAfterReload') === 'true') {
             localStorage.removeItem('spinAfterReload');
-            rollAll();
+            rollAll(); // Lancer automatiquement le spin
         }
+
     } catch (err) {
         console.error('Initialization failed:', err);
         spinButton.disabled = true;
