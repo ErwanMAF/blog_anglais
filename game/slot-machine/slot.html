@@ -251,7 +251,7 @@ async function loadImages() {
         const allImages = shuffle([...data.symbolList]);
         const selectedImages = allImages.slice(0, 5);
         symbolList = selectedImages.map(file => `/blog_anglais${file}`);
-        iconMap = selectedImages.map(file => file.replace('.png', ''));
+        iconMap = selectedImages.map(file => file.replace('.png', '.jpg', ''));
         if (symbolList.length === 0) {
             throw new Error('No images found in images.json');
         }
