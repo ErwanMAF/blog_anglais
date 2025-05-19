@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML5 Slot Machine - 5 Reels, 5 Rows</title>
+    <style>
+        :root {
+            --icon-width: 79px;
+            --icon-height: 79px;
+            --num-icons: 5; /* Matches number of images in images.json */
+        }
+
+        .debug {
+            position: fixed;
+            top: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px;
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            font-family: monospace;
+            font-size: 1.6rem;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(45deg, grey 0%, lightgray 100%);
+        }
+
+        .slots {
+            position: relative;
+            width: calc(5.5 * var(--icon-width));
+            height: calc(3 * var(--icon-height));
+            display: flex;
+            justify-content: space-between;
+            padding: calc(0.3 * var(--icon-width));
+            background: linear-gradient(45deg, grey 0%, lightgray 100%);
+            border-top: 1px solid rgba(255, 255, 255, 0.6);
+            border-right: 1px solid rgba(255, 255, 255, 0.6);
+            border-left: 1px solid rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+            box-shadow: -2px 2px 3px rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+        }
+
+        .slots::before,
+        .slots::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 10px;
+            height: 2px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .slots::before {
+            left: 0;
+            transform: translate(-200%, -50%);
+        }
+
+        .slots::after {
+            right: 0;
+            transform: translate(200%, -50%);
+        }
+
+        @keyframes win1 {
+            0% {
+                background: linear-gradient(45deg, orange 0%, yellow 100%);
+                box-shadow: 0 0 80px orange;
+            }
+            100% {
+                background: linear-gradient(45deg, grey 0%, lightgrey 100%);
+                box-shadow: -2px 2px 3px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        @keyframes win2 {
+            0% {
+                background: linear-gradient(45deg, lightblue 0%, lightgreen 100%);
+                box-shadow: 0 0 80px lightgreen;
+            }
+            100% {
+                background: linear-gradient(45deg, grey 0%, lightgrey 100%);
+                box-shadow: -2px 2px 3px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        .slots.win1 {
+            animation: win1 200ms steps(2, end) infinite;
+        }
+
+        .slots.win2 {
+            animation: win2 200ms steps(2, end) infinite;
+        }
+
+        .reel {
+            position: relative;
+            width: var(--icon-width);
+            height: calc(3 * var(--icon-height));
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .symbols {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: calc(-2 * var(--icon-height));
+            width: 100%;
+        }
+
+        .symbol {
+            width: var(--icon-width);
+            height: var(--icon-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .symbol img {
+            width: calc(var(--icon-width) * 0.9);
+            height: calc(var(--icon-height) * 0.9);
+        }
+
+        .reel::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.4) 0%, transparent 20%, transparent 80%, rgba(0, 0, 0, 0.4) 100%);
+            box-shadow: inset 0 0 6px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .reel .symbol:nth-child(3) {
+            border-top: 1px solid rgba(0, 0, 0, 0.5);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .spin-button {
+            position: absolute;
+            bottom: calc(-50px);
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .spin-button:hover {
+            background-color: #cc0000;
+        }
+
+        .spin-button:disabled {
+            background-color: #888;
+            cursor: not-allowed;
+        }
+
+        @keyframes spin {
+            0% { transform: translateY(calc(-2 * var(--icon-height))); }
+            100% { transform: translateY(calc(-1 * var(--icon-height))); }
+        }
+
+        .spinning .symbols {
+            animation: spin 500ms ease-out forwards;
+        }
+
+        #error {
+            display: none;
+            color: red;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            background: white;
+            padding: 10px;
+            border: 1px solid red;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="error">Erreur : Impossible de charger les images. Vérifiez images.json ou la console du navigateur.</div>
+    <div class="slots">
+        <div class="reel">
+            <div class="symbols"></div>
+        </div>
+        <div class="reel">
+            <div class="symbols"></div>
+        </div>
+        <div class="reel">
+            <div class="symbols"></div>
+        </div>
+        <div class="reel">
+            <div class="symbols"></div>
+        </div>
+        <div class="reel">
+            <div class="symbols"></div>
+        </div>
+        <button class="spin-button">Spin</button>
+    </div>
+
+    <div id="debug" class="debug"></div>
+
+<script>
+const debugEl = document.getElementById('debug'),
+      spinButton = document.querySelector('.spin-button'),
+      icon_width = 79,
+      icon_height = 79,
+      time_per_icon = 100,
+      indexes = [0, 0, 0, 0, 0],
+      symbolsPerReel = 7;
+
+let iconMap = [],
+    num_icons = 5,
+    symbolList = [];
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+async function loadImages() {
+    try {
+        const response = await fetch('images.json');
+        if (!response.ok) throw new Error(`Network error: ${response.status}`);
+        const data = await response.json();
+        console.log('Fetched data:', data);
+        if (!data.symbolList) throw new Error('symbolList not found in images.json');
+        const allImages = shuffle([...data.symbolList]);
+        const selectedImages = allImages.slice(0, 5);
+        symbolList = selectedImages.map(file => `${file}`);
+        iconMap = selectedImages.map(file => file.replace('.png', ''));
+        if (symbolList.length === 0) {
+            throw new Error('No images found in images.json');
+        }
+        console.log('symbolList:', symbolList);
+        console.log('iconMap:', iconMap);
+    } catch (err) {
+        console.error('Error loading images:', err);
+        debugEl.textContent = `Error loading images: ${err.message}`;
+        throw err;
+    }
+}
+
+const reelStates = Array.from(document.querySelectorAll('.reel')).map(() => {
+    const symbols = Array(symbolsPerReel).fill().map(() => Math.floor(Math.random() * num_icons));
+    return {
+        symbols,
+        currentIndex: symbols[3] // Center symbol (index 3, fourth symbol)
+    };
+});
+
+function initializeReels() {
+    if (symbolList.length === 0) {
+        debugEl.textContent = 'No images loaded. Check images.json.';
+        return;
+    }
+    document.querySelectorAll('.reel').forEach((reel, reelIndex) => {
+        const symbolsContainer = reel.querySelector('.symbols');
+        symbolsContainer.innerHTML = '';
+        const state = reelStates[reelIndex];
+        for (let i = 0; i < symbolsPerReel; i++) {
+            const symbolDiv = document.createElement('div');
+            symbolDiv.className = 'symbol';
+            const img = document.createElement('img');
+            const symbolIndex = state.symbols[i];
+            img.src = symbolList[symbolIndex % symbolList.length] || 'placeholder.png';
+            img.alt = iconMap[symbolIndex % iconMap.length];
+            symbolDiv.appendChild(img);
+            symbolsContainer.appendChild(symbolDiv);
+        }
+        // Log initial center symbol (fourth symbol)
+        console.log(`Reel ${reelIndex + 1} initial center symbol: ${iconMap[state.symbols[3] % iconMap.length]} (index: ${state.symbols[3]})`);
+        // Verify with DOM
+        const centerSymbolElement = symbolsContainer.querySelector('.symbol:nth-child(4) img');
+        console.log(`Reel ${reelIndex + 1} visual initial center symbol: ${centerSymbolElement.alt} (index: ${iconMap.indexOf(centerSymbolElement.alt)})`);
+    });
+}
+
+const roll = (reel, offset = 0, finalIndex = null) => {
+    const state = reelStates[offset];
+    const symbolsContainer = reel.querySelector('.symbols');
+    const symbols = symbolsContainer.querySelectorAll('.symbol img');
+    const delta = finalIndex !== null ? finalIndex - state.currentIndex + (finalIndex < state.currentIndex ? num_icons : 0) : Math.round(Math.random() * num_icons);
+
+    return new Promise((resolve) => {
+        let currentSpin = 0;
+        function animateSpin() {
+            if (currentSpin < delta - 5) {
+                symbolsContainer.classList.add('spinning');
+                setTimeout(() => {
+                    symbolsContainer.classList.remove('spinning');
+                    // Recycle the bottom symbol to the top
+                    const bottomSymbolIndex = state.symbols[4];
+                    state.symbols = [
+                        state.symbols[1], state.symbols[2], state.symbols[3], state.symbols[4],
+                        state.symbols[5], state.symbols[6], bottomSymbolIndex
+                    ];
+                    state.currentIndex = state.symbols[3]; // Update to center symbol (fourth)
+
+                    symbols.forEach((img, i) => {
+                        img.src = symbolList[state.symbols[i] % symbolList.length] || 'placeholder.png';
+                        img.alt = iconMap[state.symbols[i] % iconMap.length];
+                    });
+
+                    symbolsContainer.style.transform = `translateY(calc(-2 * ${icon_height}px))`;
+
+                    currentSpin++;
+                    setTimeout(animateSpin, 50);
+                }, 500);
+            } else {
+                // Set final symbol based on DOM verification
+                const centerSymbolElement = symbolsContainer.querySelector('.symbol:nth-child(4) img');
+                const visualCenterSymbol = centerSymbolElement.alt;
+                const visualCenterIndex = iconMap.indexOf(visualCenterSymbol);
+                state.symbols = [
+                    (visualCenterIndex - 3 + num_icons) % num_icons,
+                    (visualCenterIndex - 2 + num_icons) % num_icons,
+                    (visualCenterIndex - 1 + num_icons) % num_icons,
+                    visualCenterIndex,
+                    (visualCenterIndex + 1) % num_icons,
+                    (visualCenterIndex + 2) % num_icons,
+                    (visualCenterIndex + 3) % num_icons
+                ];
+                state.currentIndex = visualCenterIndex;
+                symbols.forEach((img, i) => {
+                    img.src = symbolList[state.symbols[i] % symbolList.length] || 'placeholder.png';
+                    img.alt = iconMap[state.symbols[i] % iconMap.length];
+                });
+                console.log(`Reel ${offset + 1} final center symbol: ${visualCenterSymbol} (index: ${visualCenterIndex})`);
+                resolve(visualCenterIndex);
+            }
+        }
+        setTimeout(animateSpin, offset * 150);
+    });
+};
+
+function rollAll() {
+    spinButton.disabled = true;
+    debugEl.textContent = 'rolling...';
+
+    const reelsList = document.querySelectorAll('.slots > .reel');
+    const finalIndexes = indexes.map(() => Math.floor(Math.random() * num_icons));
+
+    Promise
+        .all([...reelsList].map((reel, i) => roll(reel, i, finalIndexes[i])))
+        .then((results) => {
+            indexes.splice(0, 5, ...results);
+            console.log('Final indexes:', indexes);
+            console.log('Final center symbols:', indexes.map(i => iconMap[i % iconMap.length]));
+            debugEl.textContent = indexes.map((i) => iconMap[i % iconMap.length]).join(' - ');
+
+            const centerSymbols = indexes;
+            const symbolCounts = {};
+            centerSymbols.forEach((index) => {
+                symbolCounts[index] = (symbolCounts[index] || 0) + 1;
+            });
+            const maxCount = Math.max(...Object.values(symbolCounts));
+            let reward = 0;
+            if (maxCount >= 3) {
+                reward = maxCount * 100;
+                const winCls = maxCount >= 4 ? "win2" : "win1";
+                document.querySelector(".slots").classList.add(winCls);
+                setTimeout(() => document.querySelector(".slots").classList.remove(winCls), 2000);
+            }
+
+            debugEl.textContent += ` | Reward: ${reward} points`;
+            spinButton.disabled = false;
+        });
+}
+
+async function init() {
+    try {
+        await loadImages();                  // Charger les images nécessaires
+        initializeReels();                  // Initialiser les rouleaux
+        spinButton.addEventListener('click', () => {
+            localStorage.setItem('spinAfterReload', 'true');
+            location.reload();
+        }); // Écouteur de clic
+
+        // Vérifie si un spin automatique est requis après reload
+        if (localStorage.getItem('spinAfterReload') === 'true') {
+            localStorage.removeItem('spinAfterReload');
+            rollAll(); // Lancer automatiquement le spin
+        }
+
+    } catch (err) {
+        console.error('Initialization failed:', err);
+        spinButton.disabled = true;
+    }
+}
+
+init();
+</script>
+</body>
+</html>
