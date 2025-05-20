@@ -370,7 +370,6 @@ function rollAll() {
             indexes.splice(0, 5, ...results);
             console.log('Final indexes:', indexes);
             console.log('Final center symbols:', indexes.map(i => iconMap[i % iconMap.length]));
-            debugEl.textContent = indexes.map((i) => iconMap[i % iconMap.length]).join(' - ');
 
             const centerSymbols = indexes;
             const symbolCounts = {};
@@ -386,7 +385,7 @@ function rollAll() {
                 setTimeout(() => document.querySelector(".slots").classList.remove(winCls), 2000);
             }
 
-            debugEl.textContent += ` | Reward: ${reward} points`;
+            debugEl.textContent = `Reward: ${reward} points`;
             spinButton.disabled = false;
         });
 }
