@@ -30,17 +30,6 @@
     h2 {
       color: #1e3d59;
     }
-    .gallery {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .gallery img {
-      width: calc(33% - 10px);
-      border-radius: 8px;
-      object-fit: cover;
-    }
     .footer {
       text-align: center;
       margin-top: 40px;
@@ -48,6 +37,8 @@
       color: #777;
     }
   </style>
+    <link href="../css/lightbox.css" rel="stylesheet" />
+    <link href="../css/lightbox.min.css" rel="stylesheet" />
 </head>
 <body>
 
@@ -92,6 +83,17 @@
   <div class="footer">
     <p>© Travel to Porto - 2025</p>
   </div>
-
+<script src="../js/jquery.min.js"></script>
+    <script src="../js/lightbox.js"></script>
+    <script>
+        lightbox.option({
+        'resizeDuration': 200,
+        'fadeDuration': 200,
+        'imageFadeDuration': 200,
+        'wrapAround': true,
+        'alwaysShowNavOnTouchDevices': true,
+        'disableScrolling': true
+        });
+    </script>
 </body>
 </html>
