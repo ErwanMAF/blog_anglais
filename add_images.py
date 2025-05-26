@@ -1,7 +1,8 @@
 import os
-
-racine_images = r"C:\Users\wolfi\blog_anglais\blog_anglais\images"
-gallery_html = r"C:\Users\wolfi\blog_anglais\blog_anglais\gallery.html"
+racine_script = os.path.dirname(os.path.abspath(__file__))
+racine_images = os.path.join(racine_script, "images")
+gallery_html = os.path.join(racine_script, "gallery.html")
+print(gallery_html)
 
 # Dossiers à exclure qui sont **directement sous** racine_images
 dossiers_exclus = {"ico", "random", "gif", "index", "profile"}
