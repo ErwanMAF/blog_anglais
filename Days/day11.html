@@ -30,17 +30,6 @@
     h2 {
       color: #1e3d59;
     }
-    .gallery {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .gallery img {
-      width: calc(33% - 10px);
-      border-radius: 8px;
-      object-fit: cover;
-    }
     .footer {
       text-align: center;
       margin-top: 40px;
@@ -48,6 +37,8 @@
       color: #777;
     }
   </style>
+    <link href="../css/lightbox.css" rel="stylesheet" />
+    <link href="../css/lightbox.min.css" rel="stylesheet" />
 </head>
 <body>
 
@@ -70,28 +61,45 @@
   <div class="content">
     <h2>Summary of the day</h2>
     <p>
-      blablabla, la bougnette
+      Today we visited the Castle and Palace of Guimarães, a place full of history and charm. Walking through the ancient walls of the castle, we could almost feel the past come to life, imagining the battles and stories that shaped Portugal’s origins. The Palace of the Dukes of Braganza, with its impressive architecture and beautifully preserved rooms, gave us a glimpse into the life of nobility centuries ago. It was a fascinating and enriching visit that helped us better understand the cultural and historical heritage of this remarkable region.
     </p>
 
     <h2>Highlights</h2>
     <ul>
-      <li>📚 Visite de la librairie Lello</li>
-      <li>🍷 Dégustation de porto dans une cave</li>
-      <li>⛵ Promenade en bateau sur le Douro</li>
-      <li>🌆 Coucher de soleil depuis le pont Dom Luís I</li>
+      <li>🏰 Visit of the castle and palace of Guimarães</li>
     </ul>
 
     <h2>Gallery</h2>
     <div class="gallery">
-      <img src="images/jour1_1.jpg" alt="Librairie Lello" />
-      <img src="images/jour1_2.jpg" alt="Ruelles de Porto" />
-      <img src="images/jour1_3.jpg" alt="Vue sur le Douro" />
+      <a href="../images/Days/day11/chapel.jpg" data-lightbox="gallery">
+				<img src="../images/Days/day11/chapel.jpg" alt="Image 1">
+			  </a>
+      <a href="../images/Days/day11/vase.jpg" data-lightbox="gallery">
+				<img src="../images/Days/day11/vase.jpg" alt="Image 1">
+			  </a>
+      <a href="../images/Days/day11/salon.jpg" data-lightbox="gallery">
+				<img src="../images/Days/day11/salon.jpg" alt="Image 1">
+			  </a>
+      <a href="../images/Days/day11/chateau2.jpg" data-lightbox="gallery">
+				<img src="../images/Days/day11/chateau2.jpg" alt="Image 1">
+			  </a>
     </div>
   </div>
 
   <div class="footer">
     <p>© Travel to Porto - 2025</p>
   </div>
-
+<script src="../js/jquery.min.js"></script>
+    <script src="../js/lightbox.js"></script>
+    <script>
+        lightbox.option({
+        'resizeDuration': 200,
+        'fadeDuration': 200,
+        'imageFadeDuration': 200,
+        'wrapAround': true,
+        'alwaysShowNavOnTouchDevices': true,
+        'disableScrolling': true
+        });
+    </script>
 </body>
 </html>
